@@ -1,12 +1,12 @@
 function About() {
   return (
-    <section>
+    <section className="about-section">
       <h2>About Me</h2>
+
       <p>
-        Hello! I am an IT student. I am learning React and building a
-        student portfolio using Vite.
+        Hello! I am <strong>Prisha Kalola</strong>. I am learning React and
+        building reusable components using Vite.
       </p>
-      <hr />
     </section>
   );
 }

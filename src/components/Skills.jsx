@@ -1,6 +1,6 @@
 function Skills({ skillList }) {
   return (
-    <section>
+    <section className="skills-section">
       <h2>My Skills</h2>
 
       <ul>
@@ -8,8 +8,6 @@ function Skills({ skillList }) {
           <li key={skill}>{skill}</li>
         ))}
       </ul>
-
-      <hr />
     </section>
   );
 }
