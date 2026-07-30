@@ -1,24 +1,65 @@
+import { useEffect, useState } from "react";
+
+import Spinner from "../components/Spinner";
+import ErrorMessage from "../components/ErrorMessage";
+import RepoList from "../components/RepoList";
+
 function Projects() {
+  const [repos, setRepos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+  
+
+    fetch("https://api.github.com/users/24dit026-tech/repos")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to fetch repositories.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setRepos(data);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const filteredRepos = repos.filter((repo) =>
+    repo.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return (
+      <ErrorMessage
+        message={error}
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+
   return (
     <div className="page-card">
+      <h1>My GitHub Repositories</h1>
 
-      <h1>My Projects</h1>
+      <input
+        type="text"
+        placeholder="Search Repository"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-      <div className="project">
-        <h3>🌸 Student Portfolio</h3>
-        <p>Built using React.js and Vite with reusable components.</p>
-      </div>
-
-      <div className="project">
-        <h3>🌦 Weather App</h3>
-        <p>Displays live weather information using API.</p>
-      </div>
-
-      <div className="project">
-        <h3>📚 Library Management System</h3>
-        <p>Java desktop application with database connectivity.</p>
-      </div>
-
+      <RepoList repos={filteredRepos} />
     </div>
   );
 }
