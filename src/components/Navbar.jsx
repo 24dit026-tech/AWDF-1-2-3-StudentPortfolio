@@ -18,6 +18,10 @@ function Navbar() {
         Projects
       </NavLink>
 
+      <NavLink to="/tasks" style={active}>
+        Tasks
+      </NavLink>
+
       <NavLink to="/contact" style={active}>
         Contact
       </NavLink>
