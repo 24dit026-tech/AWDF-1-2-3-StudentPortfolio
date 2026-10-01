@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import {
   getTasks,
   createTask,
@@ -11,6 +11,9 @@ import {
   getToken
 } from "../api";
 import Spinner from "../components/Spinner";
+
+// Lazy loaded heavy analytics chart component (Post-Lab Task)
+const AnalyticsChart = lazy(() => import("../components/AnalyticsChart"));
 
 export default function Projects() {
   // Auth state
@@ -369,6 +372,11 @@ export default function Projects() {
               ))}
             </div>
           )}
+
+          {/* Lazy Loaded Heavy Analytics Chart Component */}
+          <Suspense fallback={<div style={{ textAlign: "center", padding: "20px", color: "#5B5BE8" }}>⏳ Loading analytics chart chunk...</div>}>
+            <AnalyticsChart />
+          </Suspense>
         </div>
       )}
     </div>

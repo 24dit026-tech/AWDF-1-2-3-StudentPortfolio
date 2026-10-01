@@ -1,12 +1,24 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-
 import Navbar from "./components/Navbar";
 
-import Home from "./pages/Home";
-import Projects from "./pages/Projects";
-import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
+// Lazy-loaded route components (Code Splitting)
+const Home = lazy(() => import("./pages/Home"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Fallback UI component for Suspense
+function LoadingFallback() {
+  return (
+    <div style={{ textAlign: "center", padding: "60px 20px", color: "#5B5BE8" }}>
+      <h2 style={{ fontSize: "22px", marginBottom: "8px" }}>⏳ Loading page chunk...</h2>
+      <p style={{ color: "#666", fontSize: "14px" }}>
+        React Suspense is loading the requested route bundle dynamically on demand.
+      </p>
+    </div>
+  );
+}
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -21,13 +33,15 @@ function App() {
         </button>
       </div>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/tasks" element={<Projects />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/tasks" element={<Projects />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
