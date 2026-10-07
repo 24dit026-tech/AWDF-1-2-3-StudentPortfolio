@@ -36,6 +36,36 @@ export default function Projects() {
   const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
 
+  // Practical 13: AI Generation state
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiNotice, setAiNotice] = useState("");
+
+  async function handleGenerateAiDescription() {
+    if (!title.trim()) {
+      setError("Please enter a task title first to generate an AI description.");
+      return;
+    }
+    setAiLoading(true);
+    setError("");
+    setAiNotice("");
+    try {
+      const res = await fetch("http://localhost:5000/api/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title })
+      });
+      const data = await res.json();
+      if (data.description) {
+        setDescription(data.description);
+        setAiNotice(data.fallback ? "✨ AI Fallback suggestion generated! (Server-side key safe in .env)" : "✨ AI description generated!");
+      }
+    } catch (err) {
+      setError("Failed to connect to AI generator service.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
+
   // Load user profile & tasks when token is available
   useEffect(() => {
     if (token) {
@@ -258,13 +288,24 @@ export default function Projects() {
               placeholder="Task title (required by validation middleware)"
               style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #CCC", fontSize: "15px" }}
             />
-            <input
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Task description (optional)"
-              style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #CCC", fontSize: "15px" }}
-            />
+            <div style={{ display: "flex", gap: "10px" }}>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Task description (or click AI Suggest)"
+                style={{ flex: 1, padding: "10px 14px", borderRadius: "8px", border: "1px solid #CCC", fontSize: "15px" }}
+              />
+              <button
+                type="button"
+                onClick={handleGenerateAiDescription}
+                disabled={aiLoading}
+                style={{ padding: "10px 16px", borderRadius: "8px", background: "#E8DBFF", color: "#7958F7", border: "1px solid #B2B0FF", fontWeight: "bold", cursor: "pointer" }}
+              >
+                {aiLoading ? "⏳ Generating..." : "✨ AI Suggest"}
+              </button>
+            </div>
+            {aiNotice && <p style={{ margin: "2px 0 6px 0", fontSize: "12px", color: "#137333", fontWeight: "bold" }}>{aiNotice} (Editable suggestion - review before saving)</p>}
             <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
               <label style={{ fontWeight: "bold", fontSize: "14px" }}>Priority:</label>
               <select value={priority} onChange={(e) => setPriority(e.target.value)} style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #CCC" }}>
